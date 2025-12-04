@@ -60,3 +60,5 @@ For detailed code, please refer to [2023_to_2025_quarterly.js](GEE_Online/script
 - [GEE Book](https://www.eefabook.org/)
 - [Processing and Downloading NDVI Data Using Google Earth Engine](https://www.datawim.com/post/download-ndvi-data-using-google-earth-engine/)
 - [Monitoring Vegetation Health with Google Earth Engine: A Complete NDVI Analysis Tutorial](https://www.mapcrafty.com/posts/Google_Earth_Engine_NDVI_Analysis_Tutorial/)
+- [NDVI, Mapping a Function over a Collection, Quality Mosaicking](https://developers.google.com/earth-engine/tutorials/tutorial_api_06)
+- [YouTube: How to Calculate NDVI Using Landsat 9](https://www.youtube.com/watch?v=qW3dzrkdzkU&list=PLajaK_7aADSCpV7_zUKwQCE0jCtZ2vIFH&index=9)
