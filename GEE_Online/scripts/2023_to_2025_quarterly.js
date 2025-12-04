@@ -1,14 +1,15 @@
+var regionName = 'MA'; // Provide either 'Boston' or 'MA'
+var export_ndvi = false; // Provide either 'true' or 'false'
+
 ////////////////////////////////
 // Load uploaded boundary
 ////////////////////////////////
-var regionName = 'MA'; // Provide either 'Boston' or 'MA'
-
 if (regionName === 'Boston'){
   // For Boston, load the shape object stored in assets
   var aoi_path = "projects/boston-greenspace/assets/boston_aoi";
   var aoi = ee.FeatureCollection(aoi_path);
-} else {
-  // Load a state from TIGER dataset
+} else if (regionName === 'MA'){
+  // Load state MA from TIGER dataset
   var aoi = ee.FeatureCollection("TIGER/2018/States")
             .filter(ee.Filter.eq('NAME', 'Massachusetts'))
             .geometry();
@@ -42,6 +43,7 @@ var s2 = ee.ImageCollection("COPERNICUS/S2_SR_HARMONIZED")
     var ndvi = img.normalizedDifference(['B8', 'B4']).rename('NDVI');
     return ndvi.copyProperties(img, ['system:time_start']);
   });
+
 
 print("Finished computing NDVI from 2023-01-01 to 2025-12-31.");
 
@@ -85,7 +87,7 @@ print("Finished computing each quarter's NDVI from 2023-01-01 to 2025-12-31.");
 // Visualize and save NDVI
 ////////////////////////////////
 
-// Visualization parameters (TBD)
+// Visualization parameters
 // var ndviVis = {min: -1, max: 1, palette: ['blue', 'white', 'green']};
 var ndviVis = {
   min: 0,
@@ -100,9 +102,9 @@ var ndviVis = {
 // Add to map
 if (regionName === 'Boston'){
   Map.centerObject(aoi, 11);
-} else {
+} else if (regionName === 'MA'){
   Map.centerObject(aoi, 8);
-}
+} 
 
 // Add all quarters to the map
 var yearsList = ee.List.sequence(2023, 2025);
@@ -113,21 +115,24 @@ yearsList.getInfo().forEach(function(y){
       .filter(ee.Filter.eq('year', y))
       .filter(ee.Filter.eq('quarter', q))
       .first();
-    
-    Map.addLayer(img, ndviVis, regionName + '_NDVI Year ' + y + ' Q' + q);
+      
+    Map.addLayer(img, ndviVis, regionName + '_NDVI_' + y + '_Q' + q);
     
     // Export to Google Drive
-    var fileName = regionName + '_NDVI_' + y + '_Q' + q;
-    Export.image.toDrive({
-      image: img,
-      description: fileName,
-      folder: 'GEE_NDVI_Export',
-      fileNamePrefix: fileName,
-      region: aoi,
-      scale: 10,
-      crs: 'EPSG:4326',
-      maxPixels: 1e13,
-      fileFormat: 'GeoTIFF'
-    });
+    if (export_ndvi){
+      var fileName = regionName + '_NDVI_' + y + '_Q' + q;
+    
+      Export.image.toDrive({
+        image: img,
+        description: fileName,
+        folder: 'GEE_NDVI_Export',
+        fileNamePrefix: fileName,
+        region: aoi,
+        scale: 10,
+        crs: 'EPSG:4326',
+        maxPixels: 1e13,
+        fileFormat: 'GeoTIFF'
+      });
+    }
   }
 });

@@ -1,16 +1,16 @@
+var regionName = 'MA'; // Provide either 'Boston' or 'MA'
+var export_ndvi = false; // Provide either 'true' or 'false'
+
 ////////////////////////////////
 // Load uploaded boundary
 ////////////////////////////////
-var regionName = 'MA'; // Provide either 'Boston' or 'MA'
-
 if (regionName === 'Boston'){
   // For Boston, load the shape object stored in assets
   var aoi_path = "projects/boston-greenspace/assets/boston_aoi";
   var aoi = ee.FeatureCollection(aoi_path);
-} else {
-  // Load a state from TIGER dataset
+} else if (regionName === 'MA'){
+  // Load state MA from TIGER dataset
   var aoi = ee.FeatureCollection("TIGER/2018/States")
-            // .filter(ee.Filter.eq('NAME', 'Arizona'))
             .filter(ee.Filter.eq('NAME', 'Massachusetts'))
             .geometry();
 }
@@ -52,7 +52,7 @@ var ndvi2023 = s2.median().clip(aoi);
 // Visualize NDVI
 ////////////////////////////////
 
-// Visualization parameters (TBD)
+// Visualization parameters
 // var ndviVis = {min: -1, max: 1, palette: ['blue', 'white', 'green']};
 var ndviVis = {
   min: 0,
@@ -67,9 +67,9 @@ var ndviVis = {
 // Add to map
 if (regionName === 'Boston'){
   Map.centerObject(aoi, 11);
-} else {
+} else if (regionName === 'MA'){
   Map.centerObject(aoi, 8);
-}
+} 
 
 Map.addLayer(ndvi2023, ndviVis, 'Median NDVI 2023');
 print("Finished plotting.");
@@ -77,14 +77,18 @@ print("Finished plotting.");
 ////////////////////////////////
 // Export NDVI
 ////////////////////////////////
-Export.image.toDrive({
+if (export_ndvi){
+  var file_name = regionName + '_NDVI_' + y + '_Q' + q;
+  Export.image.toDrive({
   image: ndvi2023,
-  description: 'NDVI_2023_MA',    // Task name
-  folder: 'GEE_NDVI_Export', // Folder in Google Drive
-  fileNamePrefix: 'NDVI_2023_MA', // File name
+  description: file_name,         // Task name
+  folder: 'GEE_NDVI_Export',      // Folder in Google Drive
+  fileNamePrefix: file_name,      // File name
   region: aoi,                    // Must be ee.Geometry or GeoJSON
   scale: 10,                      // Pixel resolution (meters)
   crs: 'EPSG:4326',               // Coordinate reference system
   maxPixels: 1e13,                // Large number to allow full export
   fileFormat: 'GeoTIFF'
 });
+}
+
