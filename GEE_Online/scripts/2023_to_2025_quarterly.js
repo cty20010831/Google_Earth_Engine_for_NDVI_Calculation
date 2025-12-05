@@ -128,10 +128,13 @@ yearsList.getInfo().forEach(function(y){
         folder: 'GEE_NDVI_Export',
         fileNamePrefix: fileName,
         region: aoi,
-        scale: 10,
+        // Use the sentinel resolution of 10m would make the export file too big
+        scale: 30, // Resolution of 30m for exporting
+        // scale: 100, // Resolution of 100m for exporting
         crs: 'EPSG:4326',
         maxPixels: 1e13,
-        fileFormat: 'GeoTIFF'
+        fileFormat: 'GeoTIFF',
+        formatOptions: {cloudOptimized: false}  // <-- disable tiling shards
       });
     }
   }
