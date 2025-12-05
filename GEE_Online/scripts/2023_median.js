@@ -85,10 +85,11 @@ if (export_ndvi){
   folder: 'GEE_NDVI_Export',      // Folder in Google Drive
   fileNamePrefix: file_name,      // File name
   region: aoi,                    // Must be ee.Geometry or GeoJSON
-  scale: 10,                      // Pixel resolution (meters)
+  // Use the sentinel resolution of 10m would make the export file too big
+  scale: 30, // Resolution of 30m for exporting
+  // scale: 100, // Resolution of 100m for exporting
   crs: 'EPSG:4326',               // Coordinate reference system
   maxPixels: 1e13,                // Large number to allow full export
   fileFormat: 'GeoTIFF'
 });
 }
-
